@@ -1,0 +1,16 @@
+{
+  "name": "硬件 PM 知识花园",
+  "short_name": "知识花园",
+  "description": "智能硬件产品经理个人学习应用：刷题、间隔复习、知识框架、案例与笔记",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f3ea",
+  "theme_color": "#f6f3ea",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

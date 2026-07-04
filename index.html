@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ea">
+<title>硬件 PM 知识花园</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-icon">🌿</span>
+    <div>
+      <h1>硬件 PM 知识花园</h1>
+      <p class="brand-sub">每天浇一点水，知识自己会生长</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="streak-badge" class="streak-badge" title="连续学习天数">🔥 0 天</span>
+  </div>
+</header>
+
+<nav class="nav" id="nav">
+  <button class="nav-btn active" data-view="garden"><span class="nav-ico">🏡</span><span>花园</span></button>
+  <button class="nav-btn" data-view="review"><span class="nav-ico">💧</span><span>浇水</span><em id="due-count" class="due-pill" hidden></em></button>
+  <button class="nav-btn" data-view="practice"><span class="nav-ico">🌱</span><span>播种</span></button>
+  <button class="nav-btn" data-view="knowledge"><span class="nav-ico">📚</span><span>学堂</span></button>
+  <button class="nav-btn" data-view="cases"><span class="nav-ico">🗂</span><span>案例</span></button>
+  <button class="nav-btn" data-view="notes"><span class="nav-ico">💭</span><span>笔记</span></button>
+</nav>
+
+<main id="main">
+
+  <!-- 花园总览（含成长统计） -->
+  <section id="view-garden" class="view active">
+    <div class="garden-summary card" id="garden-summary"></div>
+    <div class="plot-grid" id="plot-grid"></div>
+    <div class="card"><h2>🌤 近 12 周浇水记录</h2><div id="heatmap" class="heatmap"></div></div>
+    <div class="card"><h2>🌸 各花圃成长度</h2><div id="chapter-bars"></div></div>
+  </section>
+
+  <!-- 浇水：到期复习 -->
+  <section id="view-review" class="view">
+    <div id="review-area"></div>
+  </section>
+
+  <!-- 播种：刷题 -->
+  <section id="view-practice" class="view">
+    <div class="card picker" id="practice-picker">
+      <h2>选择一块地开始播种</h2>
+      <p class="muted">按知识域刷题。答完自评掌握度，系统会按遗忘曲线安排复习；每题附参考答案 / 答题思路。</p>
+      <div class="chip-row" id="chapter-chips"></div>
+      <div class="picker-actions">
+        <label class="check"><input type="checkbox" id="opt-shuffle" checked> 随机顺序</label>
+        <label class="check"><input type="checkbox" id="opt-unseen"> 只看未学过的</label>
+        <button class="btn primary" id="btn-start-practice">开始 →</button>
+      </div>
+    </div>
+    <div id="practice-area" hidden></div>
+  </section>
+
+  <!-- 学堂：知识框架 -->
+  <section id="view-knowledge" class="view">
+    <div class="card">
+      <h2>📚 学堂 · 硬件 PM 知识框架</h2>
+      <p class="muted">系统化的知识地图。看完一节可去「播种」对应知识域检验掌握程度；有疑问随手记到「笔记 → 思绪」。</p>
+      <div class="chip-row" id="kb-chips"></div>
+    </div>
+    <div id="kb-content"></div>
+  </section>
+
+  <!-- 案例 · 收藏 -->
+  <section id="view-cases" class="view">
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="builtin">🗂 经典案例</button>
+        <button class="tab-btn" data-tab="mine">⭐ 我的收藏</button>
+      </div>
+    </div>
+    <div id="cases-builtin"></div>
+    <div id="cases-mine" hidden>
+      <div class="card form-card">
+        <h2>添加收藏</h2>
+        <input type="text" id="col-title" class="input" placeholder="标题（必填），如：某篇供应链文章 / 某个产品拆解">
+        <input type="url" id="col-url" class="input" placeholder="链接（选填）">
+        <input type="text" id="col-tags" class="input" placeholder="标签，用逗号分隔，如：供应链, 出海">
+        <textarea id="col-note" class="input ta" placeholder="摘要 / 为什么值得收藏（选填）"></textarea>
+        <button class="btn primary" id="btn-add-collection">＋ 收藏</button>
+      </div>
+      <div id="collection-list"></div>
+    </div>
+  </section>
+
+  <!-- 笔记：答题笔记 + 思绪 -->
+  <section id="view-notes" class="view">
+    <div class="card">
+      <div class="notes-head">
+        <div class="tabs">
+          <button class="tab-btn active" data-ntab="thoughts">💭 思绪</button>
+          <button class="tab-btn" data-ntab="answers">✍️ 答题笔记</button>
+        </div>
+        <div class="notes-actions">
+          <button class="btn ghost" id="btn-export-notes">导出 Markdown</button>
+          <button class="btn ghost" id="btn-export-data">备份数据</button>
+          <label class="btn ghost file-btn">恢复备份<input type="file" id="import-file" accept=".json" hidden></label>
+        </div>
+      </div>
+      <input type="search" id="note-search" class="search" placeholder="搜索…">
+    </div>
+
+    <div id="notes-thoughts">
+      <div class="card form-card">
+        <div class="thought-type-row" id="thought-type-row">
+          <button class="chip on" data-ttype="疑问">❓ 疑问</button>
+          <button class="chip" data-ttype="想法">💡 想法</button>
+          <button class="chip" data-ttype="复盘">🔄 复盘</button>
+        </div>
+        <textarea id="thought-input" class="input ta" placeholder="随手记：学习中的疑问、灵光一闪的想法、项目复盘……"></textarea>
+        <button class="btn primary" id="btn-add-thought">＋ 记下来</button>
+      </div>
+      <div id="thoughts-list"></div>
+    </div>
+    <div id="notes-answers" hidden>
+      <div id="notes-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="js/data.js"></script>
+<script src="js/answers.js"></script>
+<script src="js/knowledge.js"></script>
+<script src="js/cases.js"></script>
+<script src="js/app.js"></script>
+<script>
+// PWA：file:// 本地双击打开时跳过，部署到 GitHub Pages（https）后自动生效
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
+</body>
+</html>
