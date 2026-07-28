@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hardware PM Lab icon">
+  <rect width="512" height="512" rx="116" fill="#0f67ff"/>
+  <path d="M126 128h76v92h108v-92h76v256h-76v-96H202v96h-76V128Z" fill="#fff"/>
+  <circle cx="384" cy="128" r="34" fill="#7dd3fc"/>
+  <path d="M358 128h52M384 102v52" stroke="#0f67ff" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f67ff">
+  <meta name="description" content="智能硬件产品开发学习沙盘：多项目、Stage-Gate、提示词、交付件、供应链与需求追溯。">
+  <title>Hardware PM Lab｜智能硬件产品开发沙盘</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="主导航">
+      <a class="brand" href="#overview" aria-label="Hardware PM Lab 首页">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span class="brand-copy"><strong>Hardware PM Lab</strong><small>智能硬件产品开发沙盘</small></span>
+      </a>
+
+      <nav class="side-nav" id="side-nav">
+        <button class="nav-item active" data-view="overview"><span>⌂</span><b>项目组合</b></button>
+        <button class="nav-item" data-view="workspace"><span>◫</span><b>开发沙盘</b></button>
+        <button class="nav-item" data-view="intelligence"><span>◎</span><b>竞品与供应链</b></button>
+        <button class="nav-item" data-view="traceability"><span>⇄</span><b>需求追溯</b></button>
+        <button class="nav-item" data-view="deliverables"><span>▤</span><b>交付件中心</b></button>
+        <button class="nav-item" data-view="prompts"><span>✦</span><b>AI提示词库</b></button>
+        <button class="nav-item" data-view="learning"><span>◇</span><b>学习中心</b></button>
+        <button class="nav-item" data-view="search"><span>⌕</span><b>全局查询</b></button>
+        <button class="nav-item" data-view="settings"><span>⚙</span><b>数据与设置</b></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="storage-note"><span class="status-dot"></span><span>数据默认保存在本机</span></div>
+        <small>离线可用 · 可导入导出</small>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="打开导航">☰</button>
+        <div class="topbar-context">
+          <span class="eyebrow" id="view-eyebrow">Portfolio</span>
+          <h1 id="view-title">项目组合中心</h1>
+        </div>
+        <div class="topbar-actions">
+          <label class="project-switcher-label" for="project-switcher">当前项目</label>
+          <select id="project-switcher" class="project-switcher" aria-label="切换当前项目"></select>
+          <button class="btn primary compact" id="quick-new-project">＋ 新建项目</button>
+        </div>
+      </header>
+
+      <main id="view-root" class="view-root" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" aria-label="移动端导航">
+    <button data-view="overview" class="active"><span>⌂</span><small>项目</small></button>
+    <button data-view="workspace"><span>◫</span><small>沙盘</small></button>
+    <button data-view="deliverables"><span>▤</span><small>交付</small></button>
+    <button data-view="prompts"><span>✦</span><small>提示词</small></button>
+    <button data-view="search"><span>⌕</span><small>查询</small></button>
+  </nav>
+
+  <dialog id="modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><span class="eyebrow" id="modal-eyebrow">编辑</span><h2 id="modal-title">标题</h2></div>
+        <button class="icon-btn" id="modal-close" aria-label="关闭">×</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <input id="global-file-input" type="file" hidden multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.md,.txt,.json,.csv,image/*">
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+</body>
+</html>

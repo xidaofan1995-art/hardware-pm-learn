@@ -1,0 +1,21 @@
+{
+  "name": "Hardware PM Lab｜智能硬件产品开发沙盘",
+  "short_name": "Hardware PM Lab",
+  "description": "多项目Stage-Gate、专业提示词、交付件归档、竞品供应链与需求追溯学习工具。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f67ff",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "categories": ["education", "productivity", "business"],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
