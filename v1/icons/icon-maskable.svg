@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#f6f3ea"/>
+  <!-- water droplet -->
+  <path d="M256 118 c-14 21 -23 33 -23 46 a23 23 0 0 0 46 0 c0 -13 -9 -25 -23 -46 z" fill="#aac9b2"/>
+  <!-- left leaf -->
+  <path d="M251 306 C187 308 149 271 140 210 C204 208 247 243 251 306 Z" fill="#6da26f"/>
+  <path d="M246 300 C216 272 189 251 163 230" stroke="#4c7a50" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <!-- right leaf -->
+  <path d="M260 276 C262 204 310 166 374 160 C372 234 324 272 260 276 Z" fill="#5a8a5e"/>
+  <path d="M265 270 C295 242 324 220 352 200" stroke="#3f6b46" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <!-- stem -->
+  <path d="M256 380 C251 334 249 296 257 258" stroke="#3f6b46" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <!-- soil mound -->
+  <path d="M164 380 Q256 340 348 380 Q328 406 256 406 Q184 406 164 380 Z" fill="#8a6844"/>
+  <circle cx="222" cy="384" r="8" fill="#6f5236"/>
+  <circle cx="282" cy="390" r="6" fill="#6f5236"/>
+  <circle cx="312" cy="379" r="5" fill="#6f5236"/>
+</svg>
