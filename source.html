@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ea"><title>原文检索 · 硬件 PM 知识花园</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon.svg"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/source.css">
+</head>
+<body>
+<header class="topbar"><div class="brand"><span class="brand-icon">📖</span><div><h1>原文检索</h1><p class="brand-sub">硬件 PM 知识花园 · 720题完整正文</p></div></div><a class="btn ghost" href="index.html">返回花园</a></header>
+<main>
+<section class="card">
+<h2>查题号，也查答案深处</h2>
+<p class="muted">收录完整题干、题目解读、知识点、答案和拓展思考。按原PDF转写，保留原资料的年代与观点，未作事实更新。</p>
+<form id="source-form" role="search"><label for="source-query">题号或关键词</label><input class="search" type="search" id="source-query" placeholder="例如：1.5.5、18.8.5、交叉验证法、FMEA" autocomplete="off"><div class="source-controls"><label for="source-chapter">章节</label><select id="source-chapter" class="input"><option value="">全部22章</option></select><button class="btn primary" type="submit">检索</button><button class="btn ghost" type="reset">清空</button></div></form>
+<p class="muted">多个关键词用空格分隔，结果需全部匹配；支持原题号和网页题目ID。匹配词会高亮，展开即可看全文。</p>
+<div class="source-links"><a class="btn ghost" href="sources/interview-full.md" download="硬件产品经理面试题_PDF完整转写.md">下载完整 Markdown</a><a class="btn ghost" href="https://drive.google.com/file/d/18xmGBOqpI7E_z2Lv9FkjjDdndCkaxSD6/view" target="_blank" rel="noopener">核对原 PDF</a></div>
+<p class="muted small">Markdown为PDF逐题正文转写，并非找回的原始MD。每题标明PDF页码。原PDF需联网；本页、正文和Markdown首次联网缓存后可离线使用。</p>
+<p id="offline-status" class="muted" role="status">正在准备离线缓存…</p>
+</section>
+<p id="source-count" role="status" aria-live="polite"></p>
+<div id="source-results"></div>
+<div class="source-pagination"><button class="btn ghost" id="previous-page">上一页</button><span id="page-label"></span><button class="btn ghost" id="next-page">下一页</button></div>
+<noscript>请启用JavaScript以检索，或使用上方链接下载完整Markdown。</noscript>
+</main>
+<script src="js/source-data.js"></script><script src="js/source-search.js"></script>
+</body></html>

@@ -1,0 +1,17 @@
+body { padding-bottom: 30px; }
+main { max-width: 1000px; margin: auto; padding: 16px; }
+.source-controls,.source-links,.source-pagination { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:14px; }
+.source-controls select { width:auto; max-width:100%; flex:1; min-width:160px; }
+#source-query { width:100%; margin-top:8px; }
+.source-pagination { justify-content:center; margin:24px 0; }
+.source-entry summary { cursor:pointer; font-weight:600; font-size:16px; line-height:1.7; }
+.source-entry summary:focus-visible { outline:3px solid var(--green); outline-offset:5px; }
+.source-meta { color:var(--ink-soft); font-size:13px; margin:8px 0; }
+.source-body { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.9; font-size:15px; }
+.source-entry h3 { margin:24px 0 8px; }
+.source-preview { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; color:var(--ink-soft); }
+.source-entry[open] .source-preview { display:none; }
+mark { background:#fff1a8; color:#273a2e; border-radius:2px; }
+.small { font-size:12px; }
+button:disabled { opacity:.4; cursor:default; }
+@media(max-width:600px) { .topbar{gap:8px;flex-wrap:wrap} .topbar h1{font-size:20px} main{padding:10px} .source-controls .btn{flex:1} .source-entry{padding:16px} .source-links a{font-size:13px} }

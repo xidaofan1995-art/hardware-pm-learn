@@ -53,7 +53,7 @@ https://<你的用户名>.github.io/hardware-pm-learn/
 
 ## 题库与内容
 
-- 题库来自《硬件产品经理面试题库（四级难度）》，共 22 个知识域、约 590 题，位于 `js/data.js`（结构：chapters → topics → questions）
+- 题库来自《硬件产品经理面试题库（四级难度）》，共 22 个知识域、720 题，位于 `js/data.js`（结构：chapters → topics → questions）
 - 参考答案位于 `js/answers.js`：`byQuestion`（逐题精确答案，可持续补充）、`byChapter`（各章考点与答题要点）、`generic`（四类题型通用框架）
 - 学堂内容位于 `js/knowledge.js`，案例库位于 `js/cases.js`，均可直接编辑扩充
 
@@ -71,3 +71,26 @@ js/knowledge.js       学堂知识框架内容
 js/cases.js           内置经典案例库
 js/app.js             应用逻辑（刷题 / 复习 / 学堂 / 案例收藏 / 笔记 / 统计）
 ```
+
+
+## 2026-10-15 全文修复与原文检索
+
+- 720个稳定题目ID保持不变；题干和对应答案按1467页原PDF完整恢复。
+- 首页右上角进入 `source.html`，按题号、网页ID、全文关键词和章节检索。
+- 检索涵盖完整题干、题目解读、知识点、答案、拓展思考；支持跨PDF换行匹配与多关键词交集。结果每页20题，展开显示整题正文，无截字。
+- `sources/interview-full.md` 是PDF逐题正文转写，**不是找回的原始Markdown文件**。每题保留来源页码，不改写原资料的年代、数据和观点。
+- 原PDF：[硬件产品经理面试题.pdf](https://drive.google.com/file/d/18xmGBOqpI7E_z2Lv9FkjjDdndCkaxSD6/view)。原PDF链接需联网；站内全文及Markdown首次联网完成缓存后可离线使用。
+- 资料统计与Markdown SHA-256见 `sources/manifest.json`。未上传31.5MB原PDF，避免额外下载负担。
+- 旧全文加载器及6题覆盖层保留为历史文件，但不再加载或缓存；旧加载器引用的21个数据分片不存在。现在的9个答案分片均为完整原文，无解压兼容性要求。
+- 缓存版本 `hpm-garden-v4-full-20261015`。升级不读写或清除用户学习数据；继续使用 `hpm-garden-v1`。仅清理本知识花园旧版本缓存，不清理同源其他应用缓存。
+
+### 验证
+
+不需安装依赖：
+
+```sh
+node tests/integrity.cjs
+node tests/behavior.cjs
+```
+
+完整性检查覆盖720题稳定ID/题干/答案/2880个原文段、Markdown一致性、全量缓存资源存在性。行为测试覆盖720题答案末尾检索、题号、章节、多关键词、跨换行、分页、无结果、全文展开，以及笔记/收藏/思绪/复习计划保持。Service Worker用模拟断网和Cache API执行真实事件处理器测试；浏览器视觉验收与真实断网测试应另行记录，不能以模拟测试替代。

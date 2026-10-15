@@ -237,7 +237,7 @@ function questionCard(q, { index, total, onRated, onSkip }) {
     <textarea class="answer-box" placeholder="先在心里（或这里）作答，再看参考答案对照。写下的要点会存为笔记。">${p.note ? esc(p.note) : ""}</textarea>
     ${p.note ? `<div class="saved-note"><b>上次的笔记</b>${esc(p.note)}</div>` : ""}
     <button class="ans-toggle" type="button">${ans.label}<i class="ans-arrow">▾</i></button>
-    <div class="ans-panel" hidden>${rich(ans.text)}${ans.exact ? "" : `<p class="ans-hint">这题暂无逐题答案，以上是本章考点与通用答题框架。对照后把你的答案要点写进笔记，就是你的专属答案。</p>`}</div>
+    <div class="ans-panel" hidden>${rich(ans.text)}<p><a href="source.html?q=${encodeURIComponent(q.id)}">📖 查看本题原文、解读与拓展思考</a></p>${ans.exact ? "" : `<p class="ans-hint">这题暂无逐题答案，以上是本章考点与通用答题框架。对照后把你的答案要点写进笔记，就是你的专属答案。</p>`}</div>
     <div class="rate-row">
       <button class="rate-btn r1"><b>🌧 模糊</b><small>明天再见</small></button>
       <button class="rate-btn r2"><b>⛅ 基本会</b><small>几天后复习</small></button>

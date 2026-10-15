@@ -1,5 +1,5 @@
 /* 知识花园 Service Worker：联网优先、离线兜底 */
-const CACHE = "hpm-garden-v3-full-answer-fix";
+const CACHE = "hpm-garden-v4-full-20261015";
 const ASSETS = [
   "./",
   "./index.html",
@@ -15,7 +15,12 @@ const ASSETS = [
   "./js/pdf-answers/ch16-18.js",
   "./js/pdf-answers/ch19-21.js",
   "./js/pdf-answers/ch22.js",
-  "./js/pdf-full/ch18-t08.js",
+  "./source.html",
+  "./css/source.css",
+  "./js/source-data.js",
+  "./js/source-search.js",
+  "./sources/interview-full.md",
+  "./sources/manifest.json",
   "./js/knowledge.js",
   "./js/cases.js",
   "./js/app.js",
@@ -31,7 +36,7 @@ self.addEventListener("install", e => {
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k.startsWith("hpm-garden-") && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -43,10 +48,12 @@ self.addEventListener("fetch", e => {
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+        }
         return res;
       })
-      .catch(() => caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match("./index.html")))
+      .catch(() => caches.match(e.request, { ignoreSearch: true }).then(hit => hit || (e.request.mode === "navigate" ? caches.match(url.pathname.endsWith("source.html") ? "./source.html" : "./index.html") : Response.error())))
   );
 });

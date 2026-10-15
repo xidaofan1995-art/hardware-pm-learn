@@ -298,3 +298,11 @@ main { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
   .acc-body { padding: 12px 16px 16px; }
   .tag-row { margin-left: 0; margin-top: 6px; display: flex; }
 }
+
+/* 独立原文检索入口；保留六个底部导航，不挤占手机操作区。 */
+.topbar { gap: 12px; flex-wrap: wrap; }
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .topbar-right { width: 100%; justify-content: space-between; }
+  .topbar-right .btn { padding: 7px 12px; font-size: 13px; }
+}
