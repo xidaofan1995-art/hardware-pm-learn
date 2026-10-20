@@ -1,0 +1,22 @@
+{
+  "id": "demo-signalcraft-report",
+  "title": "工厂手机短视频 · 示例索引",
+  "project": "SignalCraft",
+  "producer": "Claude",
+  "type": "report",
+  "summary": "用摘要、指标和条目快速浏览成果；完整拍摄手册归档后，由 Drive 原件链接打开。当前没有绑定真实原件。",
+  "createdAt": "2026-10-19T16:00:00+08:00",
+  "status": "demo",
+  "demoContent": true,
+  "archiveConfirmed": false,
+  "sourceLabel": "示例索引 · 非已完成调研",
+  "metrics": [
+    {"label": "示例结构", "value": "4 类镜头"},
+    {"label": "归档状态", "value": "未绑定原件"}
+  ],
+  "items": [
+    {"title": "全景与工序", "detail": "示例：交代生产环节，展示真实操作。"},
+    {"title": "检验与交付", "detail": "示例：把证据与文案对应起来。"}
+  ],
+  "drive": null
+}

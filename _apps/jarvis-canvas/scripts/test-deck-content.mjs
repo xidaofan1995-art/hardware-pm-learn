@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { validateEntry, validateCollection, readAndValidateContent, readAndValidateCollections } from './validate-content.mjs';
+// Node 22.18+ / 24 supports type-only stripping for this focused importer test.
+import { parseImport, parseImageFile, safePreviewImage } from '../src/import-engine.ts';
+
+let assertions = 0;
+const check = (condition, message) => { assert.ok(condition, message); assertions++; };
+const artifacts = await readAndValidateContent();
+const collections = await readAndValidateCollections(undefined, artifacts);
+check(collections.length > 0 && collections[0].artifactIds.length === 4, 'demo has four distinct documents');
+check(collections[0].artifactIds.map(id => artifacts.find(a => a.id === id).previewPages.length).reduce((a,b)=>a+b,0) === 6, 'file count and page count stay separate');
+const gallery = structuredClone(artifacts.find(a => a.id === 'demo-hardware-gallery'));
+check(validateEntry(gallery).length === 0, 'valid gallery accepted');
+for (const src of ['https://drive.google.com/private-image?token=secret', '//evil.test/a.png', './content/../a.png', './content/a.svg', 'data:image/svg+xml;base64,PHN2Zz4=', './content/a.png?access_token=secret']) {
+  const broken = structuredClone(gallery); broken.previewPages[0].image.src = src;
+  check(validateEntry(broken).length > 0 && safePreviewImage(src) === undefined, `unsafe preview rejected: ${src}`);
+}
+const duplicate = structuredClone(collections[0]); duplicate.artifactIds.push(duplicate.artifactIds[0]);
+check(validateCollection(duplicate, artifacts).length > 0, 'duplicate file references rejected');
+const missing = structuredClone(collections[0]); missing.artifactIds[0] = 'missing-document';
+check(validateCollection(missing, artifacts).length > 0, 'missing references rejected');
+const wrongProject = structuredClone(collections[0]); wrongProject.project = '另一个项目';
+check(validateCollection(wrongProject, artifacts).length > 0, 'cross-project references rejected');
+const realCollection = structuredClone(collections[0]); realCollection.demoContent = false;
+check(validateCollection(realCollection, artifacts).length > 0, 'real collection cannot claim demo members');
+const wrongWidth = structuredClone(artifacts.find(a => a.id === 'demo-hardware-comparison'));
+wrongWidth.previewPages[0].rows[0].push('extra');
+check(validateEntry(wrongWidth).length > 0, 'table rows preserve column alignment');
+const original = artifacts.find(a => !a.demoContent);
+check(original && validateEntry(original).length === 0 && !original.previewPages, 'existing real Drive entry remains accepted unchanged');
+const options = {producer:'GPT',project:'本机测试'};
+const legacy = parseImport('# 示例\n\n正文', 'sample.md', options)[0];
+check(parseImport(JSON.stringify(legacy), 'restore.json', options)[0].id === legacy.id, 'legacy text export restores identical identity');
+const imported = parseImport(JSON.stringify(gallery), 'gallery.json', options)[0];
+check(imported.previewPages.length === 2 && imported.type === 'image', 'JSON image previews imported');
+check(parseImport(JSON.stringify(imported), 'restore.json', options)[0].id === imported.id, 'preview export restores identical identity');
+const changed = structuredClone(gallery); changed.previewPages[0].image.caption = '另一版本';
+check(parseImport(JSON.stringify(changed), 'changed.json', options)[0].id !== imported.id, 'changed preview cannot be silently deduplicated');
+const badJson = structuredClone(gallery); badJson.previewPages[0].image.src = 'javascript:alert(1)';
+assert.throws(()=>parseImport(JSON.stringify(badJson),'bad.json',options));assertions++;
+const picture = await readFile(new URL('../public/content/product-1.jpg', import.meta.url));
+const image = (await parseImageFile(new File([picture], 'product.jpg', {type:'image/jpeg'}), options))[0];
+check(image.type === 'image' && image.previewPages[0].image.src.startsWith('data:image/jpeg;base64,'), 'JPEG imports locally without remote requests');
+check(parseImport(JSON.stringify(image),'image-backup.json',options)[0].id === image.id, 'local image backup restores identical identity');
+const paddedJpeg = new Uint8Array(900 * 1024); paddedJpeg.set(picture);
+const largeImage = (await parseImageFile(new File([paddedJpeg], 'large.jpg', {type:'image/jpeg'}), options))[0];
+const largeBackup = JSON.stringify(largeImage);
+check(new TextEncoder().encode(largeBackup).byteLength > 1024 * 1024 && parseImport(largeBackup, 'large-backup.json', options)[0].id === largeImage.id, 'base64-expanded image backup above old text cap restores');
+await assert.rejects(()=>parseImageFile(new File(['<svg/>'],'evil.png',{type:'image/png'}),options));assertions++;
+assert.throws(()=>parseImport('fake pdf','report.pdf',options), /PDF/);assertions++;
+console.log(`Deck contract: ${assertions} checks passed. No Drive permissions or files changed.`);

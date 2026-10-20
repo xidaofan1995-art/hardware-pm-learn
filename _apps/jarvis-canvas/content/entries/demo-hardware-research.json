@@ -1,0 +1,56 @@
+{
+  "id": "demo-hardware-research",
+  "title": "环境检测仪 · 调研提纲",
+  "project": "智能硬件",
+  "producer": "GPT",
+  "type": "pdf",
+  "summary": "先验证家庭办公场景；证据补齐后再确定显示方案。以下仅为交互演示提纲，不代表调研结论。",
+  "createdAt": "2026-10-20T17:45:00+08:00",
+  "status": "demo",
+  "demoContent": true,
+  "archiveConfirmed": false,
+  "sourceLabel": "交互演示资料 · 未绑定真实原件",
+  "drive": null,
+  "previewPages": [
+    {
+      "id": "decision",
+      "kind": "text",
+      "title": "先验证家庭办公场景",
+      "subtitle": "环境检测仪 · 调研提纲",
+      "sections": [
+        {
+          "heading": "核心假设",
+          "body": "无需打开 App，也能看懂环境变化。"
+        },
+        {
+          "heading": "待补证据",
+          "body": "用户访谈、桌面光照与屏幕可读性。"
+        },
+        {
+          "heading": "下一步",
+          "body": "比较显示方案，再制作可读性原型。"
+        }
+      ]
+    },
+    {
+      "id": "evidence",
+      "kind": "text",
+      "title": "让每个判断有依据",
+      "subtitle": "调研提纲 · 证据计划",
+      "sections": [
+        {
+          "heading": "访谈记录",
+          "body": "记录用户何时查看数据，以及之后的行动。"
+        },
+        {
+          "heading": "场景验证",
+          "body": "分别检查白天、夜间与侧视角的可读性。"
+        },
+        {
+          "heading": "决策门槛",
+          "body": "证据补齐后，再确定显示方案和提醒方式。"
+        }
+      ]
+    }
+  ]
+}

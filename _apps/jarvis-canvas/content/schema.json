@@ -1,0 +1,390 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:jarvis-canvas:artifact-index:v2",
+  "title": "Jarvis Canvas artifact index entry",
+  "description": "Only display metadata belongs in GitHub. Original files stay in Google Drive with their existing access permissions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "project",
+    "producer",
+    "type",
+    "summary",
+    "createdAt",
+    "status",
+    "demoContent",
+    "drive"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{2,99}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "type": {
+      "enum": [
+        "report",
+        "table",
+        "html",
+        "note",
+        "link",
+        "image",
+        "pdf"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "demo",
+        "ready"
+      ]
+    },
+    "demoContent": {
+      "type": "boolean"
+    },
+    "archiveConfirmed": {
+      "type": "boolean",
+      "description": "An authorized uploader confirmed the archive reference. This does not grant permissions or assert that the client independently verified the file."
+    },
+    "sourceLabel": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "metrics": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "maxLength": 4096
+          },
+          "score": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "drive": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fileId",
+            "webViewLink",
+            "mimeType",
+            "archivedAt"
+          ],
+          "properties": {
+            "fileId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{10,200}$"
+            },
+            "webViewLink": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://(drive|docs)\\.google\\.com/",
+              "maxLength": 4096
+            },
+            "mimeType": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 150
+            },
+            "archivedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "previewPages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "description": "Publishable bounded previews, not a full report. sourcePage identifies the original page when known.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "title"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,99}$"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "table",
+              "image"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "subtitle": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 300
+          },
+          "sourcePage": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "heading",
+                "body"
+              ],
+              "properties": {
+                "heading": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
+          },
+          "columns": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          "rows": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 160
+              }
+            }
+          },
+          "image": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "src",
+              "alt"
+            ],
+            "properties": {
+              "src": {
+                "type": "string",
+                "pattern": "^\\./content/[A-Za-z0-9][A-Za-z0-9_-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[wW][eE][bB][pP])$"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "caption": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "text"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "sections"
+              ],
+              "properties": {
+                "columns": false,
+                "rows": false,
+                "image": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "table"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "columns",
+                "rows"
+              ],
+              "properties": {
+                "sections": false,
+                "image": false
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "image"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "image"
+              ],
+              "properties": {
+                "sections": false,
+                "columns": false,
+                "rows": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "demoContent": {
+            "const": true
+          }
+        },
+        "required": [
+          "demoContent"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "demo"
+          },
+          "drive": {
+            "type": "null"
+          },
+          "archiveConfirmed": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "archiveConfirmed"
+        ],
+        "properties": {
+          "status": {
+            "const": "ready"
+          },
+          "drive": {
+            "type": "object"
+          },
+          "archiveConfirmed": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}

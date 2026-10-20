@@ -1,0 +1,14 @@
+{
+  "id": "demo-hardware-decision",
+  "title": "智能硬件 · 决策资料包",
+  "project": "智能硬件",
+  "summary": "报告、表格与图片，按决策顺序整理。",
+  "artifactIds": [
+    "demo-hardware-research",
+    "demo-hardware-comparison",
+    "demo-hardware-gallery",
+    "demo-hardware-review"
+  ],
+  "updatedAt": "2026-10-20T17:45:00+08:00",
+  "demoContent": true
+}

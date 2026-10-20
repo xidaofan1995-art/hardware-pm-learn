@@ -1,0 +1,49 @@
+{
+  "id": "demo-hardware-comparison",
+  "title": "显示方案 · 对照表",
+  "project": "智能硬件",
+  "producer": "Gemini",
+  "type": "table",
+  "summary": "两种显示方案先在相同条件下实测，当前所有项目均待测；不据此推导产品结论。",
+  "createdAt": "2026-10-20T17:45:00+08:00",
+  "status": "demo",
+  "demoContent": true,
+  "archiveConfirmed": false,
+  "sourceLabel": "交互演示资料 · 未绑定真实原件",
+  "drive": null,
+  "previewPages": [
+    {
+      "id": "comparison",
+      "kind": "table",
+      "title": "两种显示方案，先实测",
+      "subtitle": "对照维度示意 · 暂无测试结论",
+      "columns": [
+        "维度",
+        "方案 A",
+        "方案 B"
+      ],
+      "rows": [
+        [
+          "强光可读性",
+          "待测",
+          "待测"
+        ],
+        [
+          "夜间可读性",
+          "待测",
+          "待测"
+        ],
+        [
+          "刷新体验",
+          "待测",
+          "待测"
+        ],
+        [
+          "待机功耗",
+          "待测",
+          "待测"
+        ]
+      ]
+    }
+  ]
+}
