@@ -1,11 +1,12 @@
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, access } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MAX_FILE_BYTES = 1024 * 1024;
-const entryKeys = new Set(['id', 'title', 'project', 'producer', 'type', 'summary', 'createdAt', 'status', 'demoContent', 'archiveConfirmed', 'sourceLabel', 'metrics', 'items', 'drive']);
-const types = new Set(['report', 'table', 'html', 'note', 'link']);
+const entryKeys = new Set(['id', 'title', 'project', 'producer', 'type', 'summary', 'createdAt', 'status', 'demoContent', 'archiveConfirmed', 'sourceLabel', 'metrics', 'items', 'drive', 'previewPages']);
+const types = new Set(['report', 'table', 'html', 'note', 'link', 'image', 'pdf']);
+const previewImage = /^\.\/content\/[A-Za-z0-9][A-Za-z0-9_-]*\.(?:jpe?g|png|webp)$/i;
 const timestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 const secretValue = /(?:-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}|\bgithub_pat_[A-Za-z0-9_]{20,}|\bsk-(?:proj-|ant-)?[A-Za-z0-9_-]{24,}|\bAIza[A-Za-z0-9_-]{30,}|\bBearer\s+[A-Za-z0-9._~-]{16,})/;
 const secretQueryKey = /^(?:access_token|refresh_token|id_token|token|api_key|apikey|key|password|secret|signature|resourcekey)$/i;
@@ -43,7 +44,7 @@ export function validateEntry(entry, label = 'entry') {
   text(entry.producer, 'producer', 80);
   text(entry.summary, 'summary', 500);
   text(entry.sourceLabel, 'sourceLabel', 200, false);
-  if (!types.has(entry.type)) issue('type 仅支持 report、table、html、note、link。');
+  if (!types.has(entry.type)) issue('type 仅支持 report、table、html、note、link、image、pdf。');
   if (!validDate(entry.createdAt)) issue('createdAt 需为带时区的 ISO 日期时间。');
   if (typeof entry.demoContent !== 'boolean') issue('demoContent 必须明确为 true 或 false。');
   if (!['demo', 'ready'].includes(entry.status)) issue('status 仅支持 demo 或 ready。');
@@ -67,6 +68,55 @@ export function validateEntry(entry, label = 'entry') {
       if (item.url !== undefined && !webUrl(item.url)) issue(`items[${index}].url 必须是没有凭据的 HTTPS 链接。`);
       if (item.score !== undefined && (typeof item.score !== 'number' || !Number.isFinite(item.score))) issue(`items[${index}].score 必须是有限数字。`);
     });
+  }
+
+  if (entry.previewPages !== undefined) {
+    if (!Array.isArray(entry.previewPages) || !entry.previewPages.length || entry.previewPages.length > 20) issue('previewPages 需包含 1–20 个简短预览页。');
+    else {
+      const pageIds = new Set();
+      entry.previewPages.forEach((page, index) => {
+        const path = `previewPages[${index}]`;
+        if (!object(page)) { issue(`${path} 必须是对象。`); return; }
+        onlyKeys(page, new Set(['id', 'kind', 'title', 'subtitle', 'sourcePage', 'sections', 'columns', 'rows', 'image']), path);
+        if (typeof page.id !== 'string' || !/^[a-z0-9][a-z0-9_-]{0,99}$/.test(page.id)) issue(`${path}.id 应为稳定的字母数字标识。`);
+        else if (pageIds.has(page.id)) issue(`${path}.id 与另一预览页重复。`);
+        pageIds.add(page.id);
+        if (!['text', 'table', 'image'].includes(page.kind)) issue(`${path}.kind 仅支持 text、table、image。`);
+        text(page.title, `${path}.title`, 180);
+        text(page.subtitle, `${path}.subtitle`, 300, false);
+        if (page.sourcePage !== undefined && (!Number.isInteger(page.sourcePage) || page.sourcePage < 1 || page.sourcePage > 100000)) issue(`${path}.sourcePage 需为原文件的正整数页码。`);
+        if (page.kind === 'text') {
+          if (page.columns !== undefined || page.rows !== undefined || page.image !== undefined) issue(`${path} 文字页不能包含表格或图片字段。`);
+          if (!Array.isArray(page.sections) || !page.sections.length || page.sections.length > 5) issue(`${path}.sections 需有 1–5 段简短要点。`);
+          else page.sections.forEach((section, n) => {
+            if (!object(section)) { issue(`${path}.sections[${n}] 必须是对象。`); return; }
+            onlyKeys(section, new Set(['heading', 'body']), `${path}.sections[${n}]`);
+            text(section.heading, `${path}.sections[${n}].heading`, 100);
+            text(section.body, `${path}.sections[${n}].body`, 500);
+          });
+        }
+        if (page.kind === 'table') {
+          if (page.sections !== undefined || page.image !== undefined) issue(`${path} 表格页不能包含文字段落或图片字段。`);
+          if (!Array.isArray(page.columns) || !page.columns.length || page.columns.length > 6) issue(`${path}.columns 需有 1–6 列。`);
+          else page.columns.forEach((column, n) => text(column, `${path}.columns[${n}]`, 80));
+          if (!Array.isArray(page.rows) || !page.rows.length || page.rows.length > 10) issue(`${path}.rows 需有 1–10 行预览。`);
+          else page.rows.forEach((row, n) => {
+            if (!Array.isArray(row) || row.length !== page.columns?.length) { issue(`${path}.rows[${n}] 的列数须与 columns 一致。`); return; }
+            row.forEach((cell, c) => text(cell, `${path}.rows[${n}][${c}]`, 160, false));
+          });
+        }
+        if (page.kind === 'image') {
+          if (page.sections !== undefined || page.columns !== undefined || page.rows !== undefined) issue(`${path} 图片页不能包含文字段落或表格字段。`);
+          if (!object(page.image)) issue(`${path}.image 必须是对象。`);
+          else {
+            onlyKeys(page.image, new Set(['src', 'alt', 'caption']), `${path}.image`);
+            if (typeof page.image.src !== 'string' || !previewImage.test(page.image.src)) issue(`${path}.image.src 只支持 ./content/ 下的 JPEG、PNG、WebP；不公开外部、临时、私有或带凭据的图片链接。`);
+            text(page.image.alt, `${path}.image.alt`, 300);
+            text(page.image.caption, `${path}.image.caption`, 300, false);
+          }
+        }
+      });
+    }
   }
 
   if (entry.demoContent === true) {
@@ -114,6 +164,12 @@ export async function readAndValidateContent(root = projectRoot) {
     try { entry = JSON.parse(raw.toString('utf8').replace(/^\uFEFF/, '')); }
     catch { errors.push(`${name}: JSON 格式错误。`); continue; }
     const found = validateEntry(entry, name);
+    if (!found.length) for (const page of entry.previewPages || []) {
+      if (page.kind === 'image') {
+        try { await access(join(root, 'public', page.image.src.slice(2))); }
+        catch { found.push(`${name}: 图片预览不存在：${page.image.src}`); }
+      }
+    }
     errors.push(...found);
     if (!found.length) {
       if (ids.has(entry.id)) errors.push(`${name}: id ${entry.id} 与 ${ids.get(entry.id)} 重复。`);
@@ -124,10 +180,63 @@ export async function readAndValidateContent(root = projectRoot) {
   return entries.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt) || a.id.localeCompare(b.id));
 }
 
+/** References and order only; does not duplicate originals or grant access. */
+export function validateCollection(collection, entries, label = 'collection') {
+  const errors = [], issue = value => errors.push(`${label}: ${value}`);
+  if (!object(collection)) return [`${label}: 资料集必须是对象。`];
+  const keys = new Set(['id', 'title', 'project', 'summary', 'artifactIds', 'updatedAt', 'demoContent']);
+  for (const key of Object.keys(collection)) if (!keys.has(key)) issue(`不支持字段 ${key}。`);
+  if (typeof collection.id !== 'string' || !/^[a-z0-9][a-z0-9_-]{2,99}$/.test(collection.id)) issue('id 格式有误。');
+  for (const [key, max] of [['title', 180], ['project', 100], ['summary', 500]]) if (typeof collection[key] !== 'string' || !collection[key].trim() || collection[key].length > max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(collection[key])) issue(`${key} 应为简短非空字符串。`);
+  if (!validDate(collection.updatedAt)) issue('updatedAt 需为带时区的 ISO 日期时间。');
+  if (typeof collection.demoContent !== 'boolean') issue('demoContent 必须明确为 true 或 false。');
+  if (!Array.isArray(collection.artifactIds) || !collection.artifactIds.length || collection.artifactIds.length > 100) issue('artifactIds 需有 1–100 个成员。');
+  else {
+    const seen = new Set(), lookup = new Map(entries.map(entry => [entry.id, entry]));
+    collection.artifactIds.forEach(id => {
+      if (typeof id !== 'string' || !/^[a-z0-9][a-z0-9_-]{2,99}$/.test(id)) { issue('artifactIds 存在无效成员 ID。'); return; }
+      if (seen.has(id)) issue(`成员 ${id} 重复。`);
+      seen.add(id);
+      const member = lookup.get(id);
+      if (!member) { issue(`成员 ${id} 不存在。`); return; }
+      if (member.project !== collection.project) issue(`成员 ${id} 不属于项目 ${collection.project}。`);
+      if (!collection.demoContent && member.demoContent) issue(`正式资料集不能引用示例成员 ${id}。`);
+    });
+  }
+  if (secretValue.test(JSON.stringify(collection))) issue('发现疑似访问凭据或私钥。');
+  return errors;
+}
+
+export async function readAndValidateCollections(root = projectRoot, entries) {
+  const artifacts = entries || await readAndValidateContent(root);
+  const folder = join(root, 'content', 'collections');
+  let files;
+  try { files = (await readdir(folder, { withFileTypes: true })).filter(file => file.isFile() && file.name.endsWith('.json')).map(file => file.name).sort(); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+  if (files.length > 1000) throw new Error('资料集文件超过 1,000 份。');
+  const collections = [], seen = new Set(), errors = [];
+  for (const name of files) {
+    const raw = await readFile(join(folder, name));
+    if (raw.byteLength > MAX_FILE_BYTES) { errors.push(`${name}: 资料集超过 1 MB。`); continue; }
+    let value;
+    try { value = JSON.parse(raw.toString('utf8').replace(/^\uFEFF/, '')); }
+    catch { errors.push(`${name}: JSON 格式错误。`); continue; }
+    const found = validateCollection(value, artifacts, name);
+    errors.push(...found);
+    if (!found.length) {
+      if (seen.has(value.id)) errors.push(`${name}: 资料集 ID ${value.id} 重复。`);
+      else { seen.add(value.id); collections.push(value); }
+    }
+  }
+  if (errors.length) throw new Error(errors.slice(0, 100).join('\n'));
+  return collections.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt) || a.id.localeCompare(b.id));
+}
+
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   try {
     const entries = await readAndValidateContent();
-    console.log(`内容索引验证通过：${entries.length} 份条目（${entries.filter(entry => entry.demoContent).length} 份示例）。`);
+    const collections = await readAndValidateCollections(projectRoot, entries);
+    console.log(`内容索引验证通过：${entries.length} 份条目（${entries.filter(entry => entry.demoContent).length} 份示例），${collections.length} 个资料集。`);
     console.log('未联网读取或更改 Drive 文件、共享权限。');
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));

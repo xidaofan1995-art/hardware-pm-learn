@@ -1,41 +1,56 @@
-# Design QA · Jarvis Canvas PWA
+# Project collection and image deck QA — 2026-10-20
 
 final result: passed
 
-## Scope and evidence
+## Source and scope
 
-This is an independent multi-AI output hub inspired by the supplied Hark screenshots, not a pixel-identical copy of Hark content or branding. The user explicitly changed the target to a native-browser PWA with GitHub code/index and Google Drive originals.
+- Visual truth: `/workspace/scratch/a3b84031475f/upload/02-1000053096.jpg` (Hark chat stack), `/workspace/scratch/a3b84031475f/upload/01-1000053097.jpg` (Hark expanded card), each 691 × 1536 pixels.
+- Implemented surface: native responsive Jarvis Canvas PWA, project collection preview and focused reader. This is an adaptation to a project dashboard, not a claim of pixel-identical chat UI or a verified Hark animation clone.
+- Main browser CSS viewport: app 393 × 852, screenshot clip x485/y42/width393/height852. Captures are 393 × 852 pixels at scale 1. Native device status/navigation chrome is not reproduced.
+- Source normalized to width393 (~874px high) for the comparison. The extra source height includes Android system chrome. Content placement and poster wording differ intentionally; no pixel-offset claims are based on this difference.
+- Browser evidence: `../pwa-deck-04-home-refined.jpg`, `../pwa-deck-06-gallery-final.jpg`, `../pwa-deck-07-report-final.jpg`.
+- Combined source/implementation input inspected: `../hark-project-deck-comparison.jpg`. Focused preview/read typography input inspected: `../pwa-deck-focus.jpg`.
 
-- Source visual truth: /workspace/scratch/a3b84031475f/upload/02-1000053070.jpg (691 × 1536 pixels); product asset source: upload/01-1000053069.jpg.
-- Browser-rendered implementation: /workspace/scratch/a3b84031475f/jarvis-canvas-pwa-home.jpg, 393 × 852 pixels, same CSS size, no simulated device chrome.
-- Combined comparison input: /workspace/scratch/a3b84031475f/jarvis-canvas-qa-comparison.jpg. Source app-owned region cropped at y=100..1495 and scaled proportionally to 393px width; no source stretch. The shorter reference region is padded for the comparison.
-- State: home, latest repository index, one real Drive-backed artifact plus clearly labelled examples; no test imports.
-- Full-view comparison inspected together; card/nav typography, panel padding/radii, metric tiles and source labels were also inspected at readable size in the same input.
+## Findings and comparison history
+
+- [P2, resolved] Initial preview was too tall: first-screen primary action fell behind the search dock. Preview clip reduced from322 to255px and heading rhythm tightened. In final393px capture the action is44px high, ending at app y754; the dock starts at app y787. The action is fully visible. A320px browser iframe also measured no horizontal overflow (clientWidth=scrollWidth=320), primary bottom774.7 and dock top787.
+- [P2, resolved] Closing after changing documents could try to focus the removed preview button. The reader now focuses a connected opener or current cover button; browser check returned focus to “展开阅读显示方案 · 对照表”. Directory selection also returns focus to its current cover.
+- [P2, resolved] Zoom ancestor restricted horizontal touch panning. The zoomed paper allows both axes and does not interpret zoom panning as page flips. Browser checked fit/2x zoom dimensions. Actual phone touch gestures remain a device test.
+- [P2, resolved] Generic detail previously remounted the dashboard and reset its scroll. Dashboard now remains mounted behind detail. Browser measured361px while hidden and361px after returning. The locator's pre-click scroll adjustment is not counted as an application reset.
+- No actionable P0/P1/P2 visual or functional issue remains within the checked scope.
 
 ## Required fidelity surfaces
 
-- Typography: sans-serif CJK system stack, 16px card headings, 21px summary, 31px numeric metrics. Hark's hierarchy is retained; labels and copy changed for the new product. Long first real-card heading was shortened to avoid a one-character wrap.
-- Spacing/layout: 21px side margins, 28px panel radii, 13px vertical card gaps; fixed navigation and search leave scrollable content reachable. Earlier prototype content painted below the navigation; corrected by explicit top scroll inset and rechecked. Native PWA has no status bar/bezel drawn in app markup, as requested.
-- Colors/tokens: blue atmospheric raster background, translucent pale blue panels, white inset metric/list tiles, black selected segment. Source color/opacity language preserved; generated background replaces blurred screenshot.
-- Image quality: product thumbnails are supplied-source crops; background and PWA icon are generated raster assets. Standard UI icons use Radix Icons. No handmade SVG/emoji substitutes for assets.
-- Copy/content: home states actual GitHub/Drive roles; demo data is explicit. Source selection does not claim AI account connection. Local imports and Drive-backed originals are separately labelled.
+- Typography: existing CanvasUI/system CJK family retained. Preview20px headings and13px body, upright reader24px heading/14px body. Reader text is selectable; source text is a raster poster, so exact typeface matching is not asserted. Larger readable reader text is an intentional adaptation.
+- Spacing/layout: pale28px outer panel, fanned20px inner papers, short preview,44px controls, separate file/page navigation. Reader occupies the actual app region and preserves the mounted dashboard.320px and393px layout checks passed.
+- Colors/tokens: existing blue backdrop, translucent pale panel, warmer white paper and white inset sections retained. Dark primary pill identifies the main action. Fading is limited to non-interactive preview content; actions remain outside it.
+- Image quality/assets: existing generated blue background and supplied product crops are used. Images use contain in reading mode and scrollable2x zoom. Screenshot crops remain low-resolution references and say so; no claim of source-product verification or original-image quality. No imagegen replacement or invented product asset was introduced.
+- Copy/content: four files and six preview pages are explicitly demonstration content. File index and preview-page index remain distinct. No demo Drive IDs/links, false archive status, chat execution or share function are shown. Real source entries retain their Drive link.
 
-## Browser verification
+## Browser interactions checked
 
-Verified in the production bundle through the cloud browser:
+- Collection directory, ordered member selection, previous/next documents, keyboard right-arrow document switch.
+- Report internal page1→2, moving to another file, close/reopen preserving selected file/page; appropriate disabled edges.
+- Image fit/zoom/fit and gallery internal page navigation; alt/caption visible in accessibility tree.
+- Reader close and focus return, generic artifact detail return with retained dashboard scroll.
+- Real JPEG file selection and confirmation-preview recognition. Test selection was cancelled before saving; parser image/export restore behavior is covered by the focused contract checks.
+-320px reader width320 and footer within viewport;393px final preview/reader captured and inspected.
+- Console checked for app-origin warning/errors: none returned. Cloud browser extension metadata errors were excluded as unrelated.
 
-- Navigation, project/source filtering, keyword search and bookmark filtering.
-- JSON example import, preview/confirm and reload persistence (tested in the prototype and native PWA flow; native PWA storage keys are isolated from the prototype and old garden).
-- A real local HTML file was selected through the file chooser, parsed, confirmed and opened in an isolated iframe. Expected heading rendered; injected test script did not replace the body.
-- Real Drive-backed card points to the exact file returned and read back from Drive.
-- Updating the source entry and rebuilding index, then pressing check updates changed title/summary/metrics without rebuilding UI code.
-- Browser console inspected: no app-origin runtime errors; unrelated browser-extension metadata errors are excluded.
-- TypeScript + Vite production build and content validation passed; Service Worker syntax checked.
+## Build and boundaries
 
-## Remaining validation limits
+- `npm run build` passed (index validation, TypeScript, Vite production build).
+- `node scripts/test-deck-content.mjs` passed25 focused checks, covering references, project/demo integrity, preview path restrictions, table width, legacy entries, image import/mime spoof, PDF rejection and image-backup restore.
+- React review: hooks occur before early return; transient pointer/scroll data uses refs; fetch is one index request; image pages lazy-load; previews are bounded; prior local storage keys remain isolated. No unnecessary dependencies added.
+- Raw PDF binary parsing is not implemented: PDF is represented by a JSON preview bundle plus its original reference. Each local image≤1MiB; text≤1MiB; JSON bundle≤8MiB.
+- Real phone PWA installation, HTTPS offline/cache upgrade, touch momentum/pinch, and authenticated private Drive previews have not been verified. This change does not upload local imports or change Drive permissions.
+- Follow-up P3: higher-resolution original product images when supplied; real-device motion calibration. Hark motion cannot be inferred precisely from static screenshots.
 
-HTTPS deployment, installation on an actual Android/iOS device, and real offline/Service Worker update behavior are not yet verified. These are release checks, not a claim made by the visual result. Drive originals retain their access controls and are not cached by the app Service Worker.
+## Implementation checklist
 
-## Follow-up polish
-
-P3: tune muted caption contrast on actual mobile screens. No actionable P0/P1/P2 visual or primary-interaction findings remain in the inspected state.
+- [x] Safe preview and collection schemas plus reference validation
+- [x] Mixed document/image deck with upright reader
+- [x] File/page identity and return context
+- [x] Readable mobile density and44px primary controls
+- [x] Build, contract checks and cloud-browser verification
+- [ ] Publish and verify installation/offline on real phones (outside this unmerged draft)

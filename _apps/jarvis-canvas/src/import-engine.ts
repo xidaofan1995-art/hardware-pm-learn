@@ -1,10 +1,12 @@
 /** File-only ingestion. Nothing here contacts a model, reads a cloud account, or executes HTML. */
+import type { PreviewPage } from './preview-types';
+
 export type Artifact = {
   id: string;
   title: string;
   project: string;
   producer: string;
-  type: "report" | "table" | "html" | "note" | "link";
+  type: "report" | "table" | "html" | "note" | "link" | "image" | "pdf";
   summary: string;
   createdAt: string;
   content?: string;
@@ -12,9 +14,10 @@ export type Artifact = {
   metrics?: { label: string; value: string }[];
   items?: { title: string; detail?: string; url?: string; score?: number }[];
   sourceLabel?: string;
+  previewPages?: PreviewPage[];
 };
 
-type ImportOptions = { producer: string; project: string; title?: string };
+export type ImportOptions = { producer: string; project: string; title?: string };
 type JsonObject = Record<string, unknown>;
 
 const MAX_BYTES = 1024 * 1024;
@@ -60,7 +63,7 @@ function digest(text: string): string {
 }
 
 function canonicalId(artifact: Artifact): string {
-  return digest(JSON.stringify([
+  const identity: unknown[] = [
     artifact.producer,
     artifact.project,
     artifact.type,
@@ -70,7 +73,75 @@ function canonicalId(artifact: Artifact): string {
     artifact.url ?? "",
     artifact.metrics ?? [],
     artifact.items ?? [],
-  ]));
+  ];
+  // Preserve existing IDs when a legacy artifact has no preview pages.
+  if (artifact.previewPages?.length) identity.push(artifact.previewPages);
+  return digest(JSON.stringify(identity));
+}
+
+/** Preview assets never contact arbitrary third-party hosts. SVG/executable data is excluded. */
+export function safePreviewImage(value: unknown, allowData = true): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (/^\.\/content\/[A-Za-z0-9][A-Za-z0-9_-]*\.(?:jpe?g|png|webp)$/i.test(value)) return value;
+  if (!allowData || value.length > 1400000) return undefined;
+  const match = value.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/);
+  if (!match || match[2].length % 4 !== 0) return undefined;
+  const padding = match[2].endsWith('==') ? 2 : match[2].endsWith('=') ? 1 : 0;
+  if ((match[2].length / 4) * 3 - padding > MAX_BYTES) return undefined;
+  try {
+    const bytes = atob(match[2].slice(0, 32));
+    const mime = match[1];
+    if (mime === 'png' && !bytes.startsWith('\x89PNG\r\n\x1a\n')) return undefined;
+    if (mime === 'jpeg' && !(bytes.charCodeAt(0) === 255 && bytes.charCodeAt(1) === 216 && bytes.charCodeAt(2) === 255)) return undefined;
+    if (mime === 'webp' && !(bytes.startsWith('RIFF') && bytes.slice(8, 12) === 'WEBP')) return undefined;
+    return value;
+  } catch { return undefined; }
+}
+
+function previewPages(value: unknown): PreviewPage[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || !value.length || value.length > 20) throw new Error('每份资料需有 1–20 个预览页。');
+  const ids = new Set<string>();
+  return value.map((raw, index) => {
+    const item = record(raw);
+    if (!item || !['text', 'table', 'image'].includes(String(item.kind))) throw new Error(`预览页 ${index + 1} 的类型有误。`);
+    const id = clean(item.id, 100) || `page-${index + 1}`;
+    if (ids.has(id)) throw new Error('同一份资料的预览页 ID 不能重复。');
+    ids.add(id);
+    const title = clean(item.title, 180);
+    if (!title) throw new Error(`预览页 ${index + 1} 缺少标题。`);
+    const page: PreviewPage = { id, kind: item.kind as PreviewPage['kind'], title };
+    const subtitle = clean(item.subtitle, 300);
+    if (subtitle) page.subtitle = subtitle;
+    if (Number.isInteger(item.sourcePage) && Number(item.sourcePage) > 0 && Number(item.sourcePage) <= 100000) page.sourcePage = Number(item.sourcePage);
+    if (page.kind === 'text') {
+      if (!Array.isArray(item.sections) || !item.sections.length || item.sections.length > 5) throw new Error('文字预览需有 1–5 段要点。');
+      page.sections = item.sections.map(rawSection => {
+        const section = record(rawSection);
+        const heading = clean(section?.heading, 100), body = clean(section?.body, 500);
+        if (!heading || !body) throw new Error('文字预览的每段需有标题和正文。');
+        return { heading, body };
+      });
+    }
+    if (page.kind === 'table') {
+      if (!Array.isArray(item.columns) || !item.columns.length || item.columns.length > 6 || !Array.isArray(item.rows) || !item.rows.length || item.rows.length > 10) throw new Error('表格预览最多支持 6 列、10 行。');
+      page.columns = item.columns.map(value => clean(value, 80));
+      if (page.columns.some(value => !value)) throw new Error('表格预览列名不能为空。');
+      page.rows = item.rows.map(row => {
+        if (!Array.isArray(row) || row.length !== page.columns!.length) throw new Error('表格预览每行的列数须一致。');
+        return row.map(cell => clean(cell, 160));
+      });
+    }
+    if (page.kind === 'image') {
+      const image = record(item.image);
+      const src = safePreviewImage(image?.src), alt = clean(image?.alt, 300);
+      if (!src || !alt) throw new Error('图片预览需提供本应用图片路径或有效本机 JPEG/PNG/WebP 图片，以及图片说明。');
+      page.image = { src, alt };
+      const caption = clean(image?.caption, 300);
+      if (caption) page.image.caption = caption;
+    }
+    return page;
+  });
 }
 
 function plainHtml(html: string): { title: string; text: string } {
@@ -158,7 +229,7 @@ function jsonArtifact(value: unknown, options: ImportOptions, filename: string, 
   const producer = clean(obj.producer, 80) || options.producer;
   const project = clean(obj.project, 100) || options.project;
   const title = clean(obj.title, 180) || clean(options.title, 180) || filename || "未命名产出";
-  const types: Artifact["type"][] = ["report", "table", "html", "note", "link"];
+  const types: Artifact["type"][] = ["report", "table", "html", "note", "link", "image", "pdf"];
   const type = types.includes(obj.type as Artifact["type"]) ? obj.type as Artifact["type"] : "report";
   const content = typeof obj.content === "string" ? clean(obj.content, MAX_BYTES) : "";
   const artifact = base({ producer, project }, title, content, type);
@@ -193,19 +264,24 @@ function jsonArtifact(value: unknown, options: ImportOptions, filename: string, 
       return [normalized];
     });
   }
+  const pages = previewPages(obj.previewPages);
+  if (pages) artifact.previewPages = pages;
   // Never trust supplied IDs or connection/verification claims. Stable IDs ignore field order and time.
   artifact.id = canonicalId(artifact);
   return artifact;
 }
 
 function parseInternal(text: string, filename: string, options: ImportOptions): Artifact[] {
-  if (new TextEncoder().encode(text).byteLength > MAX_BYTES) throw new Error("单次导入最多支持 1 MB 文本，请拆分文件。");
   const input = text.replace(/^\uFEFF/, "").trim();
   if (!input) throw new Error("内容为空，请先选择文件或粘贴产出内容。");
   const ext = filename.split(".").pop()?.toLowerCase() || "";
+  const structured = ext === 'json' || input.startsWith('{') || input.startsWith('[');
+  // A local 1 MiB image expands under base64; JSON backups need room to restore it.
+  const maxBytes = structured ? MAX_BYTES * 8 : MAX_BYTES;
+  if (new TextEncoder().encode(text).byteLength > maxBytes) throw new Error(structured ? 'JSON 资料包最多支持 8 MB，请拆分后导入。' : '单次导入最多支持 1 MB 文本，请拆分文件。');
   const fallbackTitle = clean(filename.replace(/\.[^.]+$/, ""), 180);
-  if (["pdf", "xlsx", "xls", "docx", "zip", "png", "jpg", "jpeg"].includes(ext)) {
-    throw new Error("当前支持 JSON、CSV、Markdown、TXT 和 HTML；请先将此文件导出为支持的格式。");
+  if (["pdf", "xlsx", "xls", "docx", "zip", "png", "jpg", "jpeg", "webp"].includes(ext)) {
+    throw new Error(ext === 'pdf' ? 'PDF 原件请归档到 Drive；使用 JSON 导入摘要与预览页。当前不会解析 PDF 二进制文件。' : '当前文本导入支持 JSON、CSV、Markdown、TXT 和 HTML；图片请通过文件选择导入。');
   }
   if (ext === "json" || input.startsWith("{") || input.startsWith("[")) {
     let parsed: unknown;
@@ -259,6 +335,24 @@ export function parseImport(text: string, filename: string, options: ImportOptio
     if (!unique.has(artifact.id)) unique.set(artifact.id, artifact);
   }
   return [...unique.values()];
+}
+
+/** Local image only: no upload, cloud archive, or verification is implied. */
+export async function parseImageFile(file: File, options: ImportOptions): Promise<Artifact[]> {
+  if (!file.size || file.size > MAX_BYTES) throw new Error('单张图片最多支持 1 MB，请压缩后导入。');
+  const declared = file.type.toLowerCase();
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(declared)) throw new Error('图片仅支持 JPEG、PNG、WebP。');
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = '';
+  for (let offset = 0; offset < bytes.length; offset += 8192) binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  const src = safePreviewImage(`data:${declared};base64,${btoa(binary)}`);
+  if (!src) throw new Error('图片内容与文件类型不符，无法导入。');
+  const title = clean(options.title, 180) || clean(file.name.replace(/\.[^.]+$/, ''), 180) || '导入图片';
+  const artifact = base(options, title, '', 'image');
+  artifact.summary = '本机导入的图片，尚未归档到 Drive。';
+  artifact.previewPages = [{ id: 'image-1', kind: 'image', title, image: { src, alt: title } }];
+  artifact.id = canonicalId(artifact);
+  return [artifact];
 }
 
 export const demoJson = JSON.stringify({
