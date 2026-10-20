@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-20T09:13:56.975Z",
+  "artifacts": [
+    {
+      "id": "jarvis-canvas-architecture-20261020",
+      "title": "AI 产出协作规范",
+      "project": "SignalCraft",
+      "producer": "GPT",
+      "type": "report",
+      "summary": "原件存入 Google Drive，代码与卡片索引交由 GitHub 维护。各 AI 按统一格式提交更新。",
+      "createdAt": "2026-10-20T09:04:11.499Z",
+      "status": "ready",
+      "demoContent": false,
+      "archiveConfirmed": true,
+      "drive": {
+        "fileId": "1xFIhcD6N6sQ4hjXsWtdWoOmSRJSN0SZ-",
+        "webViewLink": "https://drive.google.com/file/d/1xFIhcD6N6sQ4hjXsWtdWoOmSRJSN0SZ-/view?usp=drivesdk",
+        "mimeType": "text/markdown",
+        "archivedAt": "2026-10-20T09:04:11.499Z"
+      },
+      "metrics": [
+        {
+          "label": "展示端",
+          "value": "PWA"
+        },
+        {
+          "label": "原件归档",
+          "value": "Drive"
+        }
+      ]
+    },
+    {
+      "id": "demo-hardware-opportunities",
+      "title": "智能硬件机会库 · 示例",
+      "project": "智能硬件",
+      "producer": "GPT",
+      "type": "table",
+      "summary": "统一展示竞品、用户问题和待验证假设。以下均为界面演示数据。",
+      "createdAt": "2026-10-20T08:00:00+08:00",
+      "status": "demo",
+      "demoContent": true,
+      "archiveConfirmed": false,
+      "sourceLabel": "示例数据 · 尚未归档真实原件",
+      "metrics": [
+        {
+          "label": "示例方向",
+          "value": "3 个"
+        },
+        {
+          "label": "核验状态",
+          "value": "待验证"
+        }
+      ],
+      "items": [
+        {
+          "title": "水墨屏环境检测仪",
+          "detail": "示例问题：用户根据哪一项环境指标采取行动？"
+        },
+        {
+          "title": "AI 运动辅助产品",
+          "detail": "示例问题：识别和反馈能否改善真实训练体验？"
+        },
+        {
+          "title": "智能家居联动",
+          "detail": "示例问题：可靠性、安装与售后的主要成本是什么？"
+        }
+      ],
+      "drive": null
+    },
+    {
+      "id": "demo-signalcraft-report",
+      "title": "工厂手机短视频 · 示例索引",
+      "project": "SignalCraft",
+      "producer": "Claude",
+      "type": "report",
+      "summary": "用摘要、指标和条目快速浏览成果；完整拍摄手册归档后，由 Drive 原件链接打开。当前没有绑定真实原件。",
+      "createdAt": "2026-10-19T16:00:00+08:00",
+      "status": "demo",
+      "demoContent": true,
+      "archiveConfirmed": false,
+      "sourceLabel": "示例索引 · 非已完成调研",
+      "metrics": [
+        {
+          "label": "示例结构",
+          "value": "4 类镜头"
+        },
+        {
+          "label": "归档状态",
+          "value": "未绑定原件"
+        }
+      ],
+      "items": [
+        {
+          "title": "全景与工序",
+          "detail": "示例：交代生产环节，展示真实操作。"
+        },
+        {
+          "title": "检验与交付",
+          "detail": "示例：把证据与文案对应起来。"
+        }
+      ],
+      "drive": null
+    }
+  ]
+}
