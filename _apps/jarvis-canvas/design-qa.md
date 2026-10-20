@@ -54,3 +54,9 @@ final result: passed
 - [x] Readable mobile density and44px primary controls
 - [x] Build, contract checks and cloud-browser verification
 - [ ] Publish and verify installation/offline on real phones (outside this unmerged draft)
+
+## Release gate follow-up
+
+- [P1, resolved before publication] The existing Service Worker accepted only schemaVersion1, while the collection index uses2. Production HTTPS interception would therefore reject the new index even though local HTTP UI checks passed. The app cache now accepts supported1/2 index versions, validates an optional collections array and uses the app-scoped v2 cache.
+- `node scripts/test-sw-index.mjs`:17 checks passed, exercising the actual Service Worker code in a VM for freshv2 responses, legacyv1, invalid indexes, offline cache retaining collections and its offline header, plus cache cleanup isolation from the old garden and other apps.
+- Rebuilt production output with the corrected worker and re-ran the25 deck checks. Real-device installation/offline still remains a separate verification; the unit simulation is not described as a phone test.

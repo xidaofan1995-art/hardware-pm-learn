@@ -1,7 +1,7 @@
 /* App-shell cache only. Drive originals and all cross-origin requests are untouched. */
 const scope = new URL(self.registration.scope);
 const CACHE_PREFIX = 'jarvis-canvas-pwa:' + scope.pathname + ':';
-const CACHE_VERSION = CACHE_PREFIX + 'v1';
+const CACHE_VERSION = CACHE_PREFIX + 'v2';
 const appUrl = path => new URL(path, scope).href;
 const relativePath = url => url.pathname.slice(scope.pathname.length);
 
@@ -20,7 +20,10 @@ async function cacheResponse(request, response) {
   if (/^(?:assets|icons|content)\//.test(path) && (response.headers.get('content-type') || '').includes('text/html')) return response;
   if (path === 'data/index.json') {
     const index = await response.clone().json();
-    if (index?.schemaVersion !== 1 || !Array.isArray(index.artifacts)) throw new Error('Invalid artifact index');
+    // Older artifact-only indexes and the new collection index share this app shell.
+    // An optional collections field must still be an array before it is cached.
+    if (![1, 2].includes(index?.schemaVersion) || !Array.isArray(index.artifacts)
+      || (index.collections !== undefined && !Array.isArray(index.collections))) throw new Error('Invalid artifact index');
   }
   const cache = await caches.open(CACHE_VERSION);
   await cache.put(request, response.clone());
