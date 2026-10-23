@@ -1,0 +1,205 @@
+{
+  "name": "智能硬件产品经理 AI 知识库",
+  "slug": "smart-hardware-pm-knowledge",
+  "version": "2026-10-23-rag-v1",
+  "language": "zh-CN",
+  "source_file": "sources/interview-full.md",
+  "source_pdf": "硬件产品经理面试题.pdf",
+  "source_pages": 1467,
+  "question_count": 720,
+  "retrieval_keys": [
+    "题号",
+    "章节",
+    "主题",
+    "问题关键词",
+    "知识点"
+  ],
+  "recommended_chunking": {
+    "primary_boundary": "question heading (## x.x.x)",
+    "preserve_sections": [
+      "题目解读",
+      "知识点",
+      "答案",
+      "拓展思考"
+    ],
+    "avoid_split_between_question_and_answer": true
+  },
+  "files": [
+    {
+      "chapter": 1,
+      "title": "市场调研与用户需求分析",
+      "path": "smart-hardware-pm-knowledge/01-市场调研与用户需求分析.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 2,
+      "title": "产品概念与技术可行性",
+      "path": "smart-hardware-pm-knowledge/02-产品概念与技术可行性.md",
+      "question_count": 25,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 3,
+      "title": "需求收集与分析方法",
+      "path": "smart-hardware-pm-knowledge/03-需求收集与分析方法.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 4,
+      "title": "硬件开发流程管理",
+      "path": "smart-hardware-pm-knowledge/04-硬件开发流程管理.md",
+      "question_count": 24,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 5,
+      "title": "供应链基础认知",
+      "path": "smart-hardware-pm-knowledge/05-供应链基础认知.md",
+      "question_count": 26,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 6,
+      "title": "测试阶段基础概念",
+      "path": "smart-hardware-pm-knowledge/06-测试阶段基础概念.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 7,
+      "title": "产品上市流程规划",
+      "path": "smart-hardware-pm-knowledge/07-产品上市流程规划.md",
+      "question_count": 25,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 8,
+      "title": "用户反馈与数据分析",
+      "path": "smart-hardware-pm-knowledge/08-用户反馈与数据分析.md",
+      "question_count": 33,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 9,
+      "title": "风险管理与危机应对",
+      "path": "smart-hardware-pm-knowledge/09-风险管理与危机应对.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 10,
+      "title": "资源协调与优先级决策",
+      "path": "smart-hardware-pm-knowledge/10-资源协调与优先级决策.md",
+      "question_count": 30,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 11,
+      "title": "角色认知与跨部门协作",
+      "path": "smart-hardware-pm-knowledge/11-角色认知与跨部门协作.md",
+      "question_count": 35,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 12,
+      "title": "跨部门协同与危机决策",
+      "path": "smart-hardware-pm-knowledge/12-跨部门协同与危机决策.md",
+      "question_count": 32,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 13,
+      "title": "产品版本与迭代（数据驱动）",
+      "path": "smart-hardware-pm-knowledge/13-产品版本与迭代（数据驱动）.md",
+      "question_count": 30,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 14,
+      "title": "产品版本与迭代规划",
+      "path": "smart-hardware-pm-knowledge/14-产品版本与迭代规划.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 15,
+      "title": "法规认证与合规",
+      "path": "smart-hardware-pm-knowledge/15-法规认证与合规.md",
+      "question_count": 31,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 16,
+      "title": "前沿技术趋势认知",
+      "path": "smart-hardware-pm-knowledge/16-前沿技术趋势认知.md",
+      "question_count": 36,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 17,
+      "title": "供应链韧性与数字化",
+      "path": "smart-hardware-pm-knowledge/17-供应链韧性与数字化.md",
+      "question_count": 42,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 18,
+      "title": "软硬件协同设计",
+      "path": "smart-hardware-pm-knowledge/18-软硬件协同设计.md",
+      "question_count": 43,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 19,
+      "title": "可持续发展与ESG",
+      "path": "smart-hardware-pm-knowledge/19-可持续发展与ESG.md",
+      "question_count": 43,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 20,
+      "title": "团队角色与职责",
+      "path": "smart-hardware-pm-knowledge/20-团队角色与职责.md",
+      "question_count": 38,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 21,
+      "title": "召回流程与法规应对",
+      "path": "smart-hardware-pm-knowledge/21-召回流程与法规应对.md",
+      "question_count": 36,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    },
+    {
+      "chapter": 22,
+      "title": "快速定制与迭代优化",
+      "path": "smart-hardware-pm-knowledge/22-快速定制与迭代优化.md",
+      "question_count": 36,
+      "domain": "smart-hardware-product-management",
+      "content_type": "interview-qa"
+    }
+  ]
+}
