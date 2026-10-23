@@ -94,3 +94,16 @@ node tests/behavior.cjs
 ```
 
 完整性检查覆盖720题稳定ID/题干/答案/2880个原文段、Markdown一致性、全量缓存资源存在性。行为测试覆盖720题答案末尾检索、题号、章节、多关键词、跨换行、分页、无结果、全文展开，以及笔记/收藏/思绪/复习计划保持。Service Worker用模拟断网和Cache API执行真实事件处理器测试；浏览器视觉验收与真实断网测试应另行记录，不能以模拟测试替代。
+
+## 智能硬件产品经理 AI 知识库
+
+为便于 ChatGPT / Claude / Gemini / Agent / RAG 精准检索，已将 2.93MB 的完整逐题 Markdown 源文件按 22 个知识域拆分到：
+
+- `smart-hardware-pm-knowledge/index.md`：知识库总索引
+- `smart-hardware-pm-knowledge/01-*.md` ～ `22-*.md`：22 个章节知识文件，共 720 题
+- `smart-hardware-pm-knowledge/manifest.json`：RAG 元数据、章节题数与推荐切块规则
+- `sources/interview-full.md`：完整总源文件，继续保留作为单文件来源
+
+每章均增加统一 frontmatter：`domain: smart-hardware-product-management`、章节号、章节标题、题数、来源和版本。正文不重写，继续保留原 PDF 的题号、页码、题目解读、知识点、完整答案与拓展思考。
+
+推荐 AI 检索顺序：先读取 `smart-hardware-pm-knowledge/index.md` → 根据问题定位章节 → 以题号（如 18.8.5）或主题关键词检索对应题目。
